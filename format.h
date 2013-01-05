@@ -246,6 +246,10 @@ class BasicFormatter {
     FormatInt(value, spec);
     return *this;
   }
+
+  void Clear() {
+	  buffer_.clear();
+  }
 };
 
 /**
