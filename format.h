@@ -35,6 +35,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include "sprint.h"
 
 namespace format {
 
@@ -91,6 +92,30 @@ class Array {
   // Appends data to the end of the array.
   void append(const T *begin, const T *end);
 
+  // This gives clients more freedom to interact with the buffer, 
+  // this should refer to something more generic than the class in
+  // Sprint (ie the code needs to be reorganized).
+  //  Basic contract:
+  //    1. We pass in an operation to be performed on the tail of the buffer
+  //    2. That operation has freedom to jump around the buffer
+  //       and modify past the end
+  //    3. We are optimistic that it wil succeed, but the operation may indicate failure
+  //    4. Client's transaction gets char* and size_t -- 
+  //	   current head of buffer, remaining capacity
+  //    5. Client indicates success or failure of transaction, on success
+  //       return size delta, size of buffer incremented. On failure, changes
+  //       may linger past size, but size does not change
+  //    6. Return false on failure (giving client chance to resize and retry)
+  bool appendTransact( sprint::AppendTransaction<T>& trans ) {
+	
+	std::size_t sizeDiff = trans.AppendTo( ptr_ + size_, capacity_ - size_);
+	if (sizeDiff != sprint::AppendTransaction<T>::TRANSACTION_FAILED) {
+		size_ += sizeDiff;
+		return true;
+	}
+	return false;
+  }
+
   T &operator[](std::size_t index) { return ptr_[index]; }
   const T &operator[](std::size_t index) const { return ptr_[index]; }
 };
@@ -113,6 +138,16 @@ void Array<T, SIZE>::append(const T *begin, const T *end) {
   std::copy(begin, end, ptr_ + size_);
   size_ += num_elements;
 }
+/*
+template <typename T, std::size_t SIZE>
+bool Array<T, SIZE>::appendTransact( sprint::AppendTransaction& trans ) {
+	std::size_t sizeDiff = trans.AppendTo( ptr_ + size, capacity_ - size_);
+	if (sizeDiff != sprint::AppendTransaction::TRANSACTION_FAILED) {
+		size_ += sizeDiff;
+		return true;
+	}
+	return false;
+}*/
 
 class ArgInserter;
 }
@@ -241,6 +276,8 @@ class BasicFormatter {
     std::size_t size = std::strlen(value);
     std::strncpy(GrowBuffer(size), value, size);
   }
+
+  void operator <<(sprint::AppendTransaction<char>& spr);
 
   BasicFormatter &Write(int value, const FormatSpec &spec) {
     FormatInt(value, spec);
