@@ -121,6 +121,52 @@ class TestString {
   }
 };
 
+class TestTransact : public sprint::AppendTransaction<char> {
+public:
+	char count;
+	TestTransact() : count('0') {
+
+	}
+
+	size_t AppendTo(char* dest, size_t destSize) {
+		if (destSize >= 1) {
+			*dest = count++;
+			return 1;
+		}
+		return AppendTransaction<char>::TRANSACTION_FAILED;
+	}
+
+};
+
+TEST(ArrayTest, AppendTransact) {
+	Array<char, 11> array;
+	TestTransact nextCharOperation;
+
+	int i = 0;
+	for (i = 0; i < 10; ++i)
+	{
+		bool tranSuccess = array.appendTransact( nextCharOperation );
+		EXPECT_EQ(true, tranSuccess);
+		EXPECT_EQ(i+1, array.size());
+	}
+
+	bool tranSuccess = array.appendTransact( nextCharOperation );
+	EXPECT_EQ(true, tranSuccess);
+	EXPECT_EQ(++i, array.size());
+
+	// This should fail as it requires a grow
+	tranSuccess = array.appendTransact( nextCharOperation );
+	EXPECT_EQ(false, tranSuccess);
+	EXPECT_EQ(i, array.size());
+
+	// Now it should work
+	array.reserve(array.size() + 1);
+	tranSuccess = array.appendTransact( nextCharOperation );
+	EXPECT_EQ(true, tranSuccess);
+	EXPECT_EQ(++i, array.size());
+
+}
+
 TEST(ArrayTest, Ctor) {
   Array<char, 123> array;
   EXPECT_EQ(0u, array.size());
@@ -195,6 +241,12 @@ TEST(ArrayTest, Append) {
   EXPECT_EQ('e', array[11]);
   EXPECT_EQ(12u, array.size());
   EXPECT_EQ(15u, array.capacity());
+}
+
+TEST(SprintTest, Hex) {
+	Formatter f;
+	f << sprint::asHexL<>(0x1234abcd);
+	EXPECT_STREQ("1234abcd", f.c_str());
 }
 
 TEST(FormatterTest, Escape) {

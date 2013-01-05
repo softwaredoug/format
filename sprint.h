@@ -19,7 +19,6 @@ namespace sprint {
 //     that means the end-user did not give Ape a big enough buffer. Do
 //     nothing and return -1
 //
-#undef max
 template <class T>
 class AppendTransaction
 {
