@@ -48,13 +48,13 @@ using fmt::Formatter;
 using fmt::FormatSpec;
 using fmt::StringRef;
 
-namespace sprint {
+namespace format { namespace sprint {
 char Case<HexCase::upper>::lookup[16] =  { '0', '1', '2', '3', '4', '5', '6', '7', '8',
 									'9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 char Case<HexCase::lower>::lookup[16] =  { '0', '1', '2', '3', '4', '5', '6', '7', '8',
 									'9', 'a', 'b', 'c', 'd', 'e', 'f'};
-}
+}}
 
 #if _MSC_VER
 # undef snprintf
@@ -445,7 +445,7 @@ void BasicFormatter::operator<<(int value) {
   FormatDecimal(out, abs_value, num_digits);
 }
 
-void BasicFormatter::operator<<(sprint::AppendTransaction<char>& spr) {
+void BasicFormatter::operator<<(format::sprint::AppendTransaction<char>& spr) {
 	// Acting optimistically on the buffer
 	buffer_.appendTransact(spr);
 }

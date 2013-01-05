@@ -121,7 +121,7 @@ class TestString {
   }
 };
 
-class TestTransact : public sprint::AppendTransaction<char> {
+class TestTransact : public format::sprint::AppendTransaction<char> {
 public:
 	char count;
 	TestTransact() : count('0') {
@@ -245,7 +245,7 @@ TEST(ArrayTest, Append) {
 
 TEST(SprintTest, Hex) {
 	Formatter f;
-	f << sprint::asHexL<>(0x1234abcd);
+	f << format::sprint::asHexL<>(0x1234abcd);
 	EXPECT_STREQ("1234abcd", f.c_str());
 }
 

@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <limits>
 
-namespace sprint {
+namespace format { namespace sprint {
 
 // Sprints will
 // - have constructors that hold a copy of whats going to be appended
@@ -200,5 +200,5 @@ class asBin : public SpBin< Power<1>, LowerHex, PadT>
 	public:
 		asBin(uint32_t val) : SpBin<Power<1>, LowerHex, PadT>(val) {}
 	};
-}
+}}
 #endif
