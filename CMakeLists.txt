@@ -10,6 +10,14 @@ endif ()
 
 project(FORMAT)
 
+# VC11 contains std::tuple with variadic templates emulation macro.
+# _VARIADIC_MAX defaulted to 5 but gtest requires 10.
+if (MSVC)
+	if (MSVC_VERSION EQUAL 1700)
+		 add_definitions(-D_VARIADIC_MAX=10)
+	endif ()
+endif()
+
 add_library(format format.cc)
 if (CMAKE_COMPILER_IS_GNUCXX)
   set_target_properties(format PROPERTIES COMPILE_FLAGS
