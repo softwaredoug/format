@@ -243,10 +243,44 @@ TEST(ArrayTest, Append) {
   EXPECT_EQ(15u, array.capacity());
 }
 
+class Foo {
+public:
+	Foo(uint32_t val) {}
+};
+
 TEST(SprintTest, Hex) {
 	Formatter f;
-	f << format::sprint::asHexL<>(0x1234abcd);
+	using namespace format::sprint;
+	uint32_t val32 = 0x1234abcd;
+	uint64_t val64 = 0xabcd1234abcd1234;
+	// Test all the implicit conversions
+	f << asHexL<>(val32);
 	EXPECT_STREQ("1234abcd", f.c_str());
+
+	// This is valid
+	f.Clear();
+	f << asHexL<>(-50);
+	EXPECT_STREQ("ffffffce", f.c_str());
+
+	// This should give a compiler error, not a warning
+	// about casting to 32 bit
+	f.Clear();
+	//f << asHexL<>(val64);
+
+	// This should work
+	f.Clear();
+	val64 = 0xabcdabcd12341234;
+	f <<  asHexL<NoPad, uint64_t>(val64);
+	EXPECT_STREQ("abcdabcd12341234", f.c_str());
+
+	// This should also work
+	f.Clear();
+	uint16_t val16 = 0xabcd;
+	f << asHexL<>(val16);
+	EXPECT_STREQ("abcd", f.c_str());
+
+
+	
 }
 
 TEST(FormatterTest, Escape) {

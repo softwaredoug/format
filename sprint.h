@@ -114,21 +114,44 @@ public:
 	};
 };
 
+// force compiler errors for incorrectly sized
+// unsigend arguments
+template <class unsignedT>
+struct UnsignedProxy;
+
+template<>
+struct UnsignedProxy<uint32_t>
+{
+
+	uint32_t value;
+	UnsignedProxy(uint32_t val) : value(val) {};
+	UnsignedProxy(int32_t val) : value(val) {};
+};
+
+template<>
+struct UnsignedProxy<uint64_t>
+{
+	uint64_t value;
+	UnsignedProxy(uint64_t val) : value(val) {};
+	UnsignedProxy(int64_t val) : value(val) {};
+
+};
+
 // TODO:
 //  (2) define for arbitrary integer size
 //  (5) minimize potential code bloat
 //  (6) test
-template <typename PowerT, typename CaseT = LowerHex, typename PadT = NoPad>
+template <typename PowerT, typename CaseT = LowerHex, typename PadT = NoPad, typename unsignedT=uint32_t>
 class SpBin : public AppendTransaction<char>
 {
 private:
-	mutable uint32_t m_val;
+	mutable unsignedT m_val;
 public:
-	SpBin(uint32_t val) : m_val(val)
+	SpBin(UnsignedProxy<unsignedT> val) : m_val(val.value)
 	{
 	}
 
-	static inline std::size_t charLen(uint32_t val)
+	static inline std::size_t charLen(unsignedT val)
 	{
 		std::size_t rVal = 0;
 		while (val)
@@ -165,36 +188,36 @@ public:
 // default hex formatters
 
 // Lowercase Hex
-template <typename PadT = NoPad> 
-class asHexL : public SpBin< Power<4>, LowerHex, PadT> 
+template <typename PadT = NoPad, typename unsignedT=uint32_t> 
+class asHexL : public SpBin< Power<4>, LowerHex, PadT, unsignedT> 
 	{ 
 	public:
-		asHexL(uint32_t val) : SpBin<Power<4>, LowerHex, PadT>(val) {}
+		asHexL(UnsignedProxy<unsignedT> val) : SpBin<Power<4>, LowerHex, PadT, unsignedT>(val) {}
 	};
 
 // Uppercase Hex
-template <typename PadT = NoPad> 
-class asHexU : public SpBin< Power<4>, UpperHex, PadT> 
+template <typename PadT = NoPad, typename unsignedT=uint32_t> 
+class asHexU : public SpBin< Power<4>, UpperHex, PadT, unsignedT> 
 	{ 
 	public:
-		asHexU(uint32_t val) : SpBin<Power<4>, UpperHex, PadT>(val) {}
+		asHexU(UnsignedProxy<unsignedT> val) : SpBin<Power<4>, UpperHex, PadT>(val) {}
 	};
 
 // Octal Formatting
-template <typename PadT = NoPad> 
-class asOct : public SpBin< Power<3>, LowerHex, PadT> 
+template <typename PadT = NoPad, typename unsignedT=uint32_t> 
+class asOct : public SpBin< Power<3>, LowerHex, PadT, unsignedT> 
 	{ 
 	public:
-		asOct(uint32_t val) : SpBin<Power<3>, LowerHex, PadT>(val) {}
+		asOct(UnsignedProxy<unsignedT> val) : SpBin<Power<3>, LowerHex, PadT>(val) {}
 	};
 
 
 // Binary Formatting
-template <typename PadT = NoPad> 
-class asBin : public SpBin< Power<1>, LowerHex, PadT> 
+template <typename PadT = NoPad, typename unsignedT=uint32_t> 
+class asBin : public SpBin< Power<1>, LowerHex, PadT, unsignedT> 
 	{ 
 	public:
-		asBin(uint32_t val) : SpBin<Power<1>, LowerHex, PadT>(val) {}
+		asBin(UnsignedProxy<unsignedT> val) : SpBin<Power<1>, LowerHex, PadT>(val) {}
 	};
 }}
 #endif
