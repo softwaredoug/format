@@ -106,15 +106,7 @@ class Array {
   //       return size delta, size of buffer incremented. On failure, changes
   //       may linger past size, but size does not change
   //    6. Return false on failure (giving client chance to resize and retry)
-  bool appendTransact( sprint::AppendTransaction<T>& trans ) {
-	
-	std::size_t sizeDiff = trans.AppendTo( ptr_ + size_, capacity_ - size_);
-	if (sizeDiff != sprint::AppendTransaction<T>::TRANSACTION_FAILED) {
-		size_ += sizeDiff;
-		return true;
-	}
-	return false;
-  }
+  bool appendTransact( const sprint::AppendTransaction<T>& trans );
 
   T &operator[](std::size_t index) { return ptr_[index]; }
   const T &operator[](std::size_t index) const { return ptr_[index]; }
@@ -138,16 +130,16 @@ void Array<T, SIZE>::append(const T *begin, const T *end) {
   std::copy(begin, end, ptr_ + size_);
   size_ += num_elements;
 }
-/*
+
 template <typename T, std::size_t SIZE>
-bool Array<T, SIZE>::appendTransact( sprint::AppendTransaction& trans ) {
-	std::size_t sizeDiff = trans.AppendTo( ptr_ + size, capacity_ - size_);
-	if (sizeDiff != sprint::AppendTransaction::TRANSACTION_FAILED) {
+bool Array<T, SIZE>::appendTransact( const sprint::AppendTransaction<T>& trans ) {
+	std::size_t sizeDiff = trans.AppendTo( ptr_ + size_, capacity_ - size_);
+	if (sizeDiff != sprint::AppendTransaction<T>::TRANSACTION_FAILED) {
 		size_ += sizeDiff;
 		return true;
 	}
 	return false;
-}*/
+}
 
 class ArgInserter;
 }
@@ -277,7 +269,7 @@ class BasicFormatter {
     std::strncpy(GrowBuffer(size), value, size);
   }
 
-  void operator <<(sprint::AppendTransaction<char>& spr);
+  void operator <<(const sprint::AppendTransaction<char>& spr);
 
   BasicFormatter &Write(int value, const FormatSpec &spec) {
     FormatInt(value, spec);

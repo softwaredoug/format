@@ -30,7 +30,7 @@ public:
 	enum {
 		TRANSACTION_FAILED = 0xFFFFFFFF
 	};
-	virtual size_t AppendTo(T* dest, size_t destSize) = 0;
+	virtual size_t AppendTo(T* dest, size_t destSize) const = 0;
 };
    
 // Configure pad 
@@ -122,7 +122,7 @@ template <typename PowerT, typename CaseT = LowerHex, typename PadT = NoPad>
 class SpBin : public AppendTransaction<char>
 {
 private:
-	uint32_t m_val;
+	mutable uint32_t m_val;
 public:
 	SpBin(uint32_t val) : m_val(val)
 	{
@@ -140,7 +140,7 @@ public:
 	}
 
 	// Append to dest, returning num chars written
-	size_t AppendTo(char* dest, size_t destLen)
+	size_t AppendTo(char* dest, size_t destLen) const
 	{
 		std::size_t charsNeeded = charLen(m_val);
 		std::size_t width = PadT::charWidth(charsNeeded);

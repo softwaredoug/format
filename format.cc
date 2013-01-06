@@ -445,7 +445,7 @@ void BasicFormatter::operator<<(int value) {
   FormatDecimal(out, abs_value, num_digits);
 }
 
-void BasicFormatter::operator<<(format::sprint::AppendTransaction<char>& spr) {
+void BasicFormatter::operator<<(const format::sprint::AppendTransaction<char>& spr) {
 	// Acting optimistically on the buffer
 	buffer_.appendTransact(spr);
 }

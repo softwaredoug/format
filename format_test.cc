@@ -123,12 +123,12 @@ class TestString {
 
 class TestTransact : public format::sprint::AppendTransaction<char> {
 public:
-	char count;
+	mutable char count;
 	TestTransact() : count('0') {
 
 	}
 
-	size_t AppendTo(char* dest, size_t destSize) {
+	size_t AppendTo(char* dest, size_t destSize) const {
 		if (destSize >= 1) {
 			*dest = count++;
 			return 1;
