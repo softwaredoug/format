@@ -70,30 +70,30 @@ public:
 typedef Pad<0, '\0'> NoPad;
 		
 // Configure the hex case
-enum class HexCase : bool {
-	lower = false,
-	upper = true,
+enum HexCase {
+	lowercase = false,
+	uppercase = true,
 };
 
-template <HexCase>
+template <bool>
 class Case {};
 
 template <>
-class Case<HexCase::upper> {
+class Case<uppercase> {
 public:
 	static char lookup[16];
 };
 
-typedef Case<HexCase::upper> UpperHex;
+typedef Case<uppercase> UpperHex;
 
 template <>
-class Case<HexCase::lower> {
+class Case<lowercase> {
 public:
 	static char lookup[16];
 
 };
 
-typedef Case<HexCase::lower> LowerHex;
+typedef Case<lowercase> LowerHex;
 
 	
 // 2^4 = hex, 2^3 = oct, etc
@@ -113,10 +113,6 @@ public:
 		mask = (1 << _p) - 1,
 	};
 };
-
-static_assert( Power<4>::mask == 0xf, "Power template not correctly calculating mask for hex");
-static_assert( Power<3>::mask == 0x7, "Power template not correctly calculating mask for oct");
-static_assert( Power<1>::mask == 0x1, "Power template not correctly calculating mask for bin");
 
 // TODO:
 //  (2) define for arbitrary integer size

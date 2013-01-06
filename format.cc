@@ -49,10 +49,10 @@ using fmt::FormatSpec;
 using fmt::StringRef;
 
 namespace format { namespace sprint {
-char Case<HexCase::upper>::lookup[16] =  { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+char Case<uppercase>::lookup[16] =  { '0', '1', '2', '3', '4', '5', '6', '7', '8',
 									'9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-char Case<HexCase::lower>::lookup[16] =  { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+char Case<lowercase>::lookup[16] =  { '0', '1', '2', '3', '4', '5', '6', '7', '8',
 									'9', 'a', 'b', 'c', 'd', 'e', 'f'};
 }}
 
