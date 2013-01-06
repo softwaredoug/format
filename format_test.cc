@@ -262,22 +262,40 @@ TEST(SprintTest, Hex) {
 	f << asHexL<>(-50);
 	EXPECT_STREQ("ffffffce", f.c_str());
 
+    // The regular asHexL<> promotes everything to 32 bit
+    // for example, this 16 bit unsigned
+    // This might be a common bug in this API...
+    int16_t val16 = -50;
+    f.Clear();
+    f << asHexL<>(val16);
+    EXPECT_STREQ("ffffffce", f.c_str());
+
+    // However this should work for correct 16-bit width
+    f.Clear();
+    f << asHexL<NoPad, uint16_t>(val16);
+    EXPECT_STREQ("ffce", f.c_str());
+
+    // We should also correctly do 8 bit, unlike boost format
+    uint8_t val8 = 0x55;
+    f.Clear();
+    f << asHexL<>(val8);
+    EXPECT_STREQ("55", f.c_str());
+
+    // And when specialized...
+    f.Clear();
+    f << asHexL<NoPad, uint8_t>(val8);
+    EXPECT_STREQ("55", f.c_str());
+
 	// This should give a compiler error, not a warning
 	// about casting to 32 bit
 	f.Clear();
 	//f << asHexL<>(val64);
 
-	// This should work
+	// This should work for 64 bit
 	f.Clear();
 	val64 = 0xabcdabcd12341234;
 	f <<  asHexL<NoPad, uint64_t>(val64);
 	EXPECT_STREQ("abcdabcd12341234", f.c_str());
-
-	// This should also work
-	f.Clear();
-	uint16_t val16 = 0xabcd;
-	f << asHexL<>(val16);
-	EXPECT_STREQ("abcd", f.c_str());
 
 
 	

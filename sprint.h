@@ -115,9 +115,37 @@ public:
 };
 
 // force compiler errors for incorrectly sized
-// unsigend arguments
+// unsigend arguments. 
+//
+// The implicit conversion from signed->unsigned
+// may give unexpected behavior, for example
+//  int8_t val8 = -1;
+//  f << asHexL<>(val8);
+//
+//  the 8 bit int gets cast to 32 bit unsigned,
+//  so the output is: ffffffff
+//  not as might be expected: ff
+//
+//  The user right now should do
+//  f << asHexL<NoPad, uint8_t>(val8);
 template <class unsignedT>
 struct UnsignedProxy;
+
+template<>
+struct UnsignedProxy<uint8_t>
+{
+    uint8_t value;
+    UnsignedProxy(uint8_t val) : value(val) {};
+    UnsignedProxy(int8_t val) : value(val) {};
+};
+
+template<>
+struct UnsignedProxy<uint16_t>
+{
+    uint16_t value;
+    UnsignedProxy(uint16_t val) : value(val) {};
+    UnsignedProxy(int16_t val) : value(val) {};
+};
 
 template<>
 struct UnsignedProxy<uint32_t>
@@ -136,6 +164,7 @@ struct UnsignedProxy<uint64_t>
 	UnsignedProxy(int64_t val) : value(val) {};
 
 };
+
 
 // TODO:
 //  (2) define for arbitrary integer size
